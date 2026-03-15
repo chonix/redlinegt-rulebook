@@ -1,13 +1,14 @@
 backend:
   name: github
-  repo: chonix/redline-rulebook
+  repo: chonix/redlinegt-rulebook
   branch: main
+  base_url: https://oauth.decapcms.org
+  auth_endpoint: auth
 
-media_folder: "static/images"
-public_folder: "/images"
+media_folder: "content/rules/es/media"
+public_folder: "/content/rules/es/media"
 
 collections:
-
   - name: "rules_es"
     label: "Reglamento (ES)"
     folder: "content/rules/es"
