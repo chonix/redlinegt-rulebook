@@ -1,0 +1,20 @@
+backend:
+  name: github
+  repo: chonix/redline-rulebook
+  branch: main
+
+media_folder: "static/images"
+public_folder: "/images"
+
+collections:
+
+  - name: "rules_es"
+    label: "Reglamento (ES)"
+    folder: "content/rules/es"
+    create: true
+    slug: "{{slug}}"
+
+    fields:
+      - { label: "Título", name: "title", widget: "string" }
+      - { label: "Orden", name: "order", widget: "number" }
+      - { label: "Contenido", name: "body", widget: "markdown" }
