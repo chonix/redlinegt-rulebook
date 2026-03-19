@@ -4,8 +4,9 @@ Todo coche que participe en REDLINE GT LEAGUE deberá instalar en sus
 diseños la placa porta número oficial, en ambos lados del coche, en un
 tamaño mínimo de 50% por 50% (Ver Imagen)
 
-## <img src="media/media/image2.jpg"
-style="width:6.27083in;height:3.52083in" />11.1. Identificación obligatoria
+## 11.1. Identificación obligatoria
+
+<img src="media/image2.jpg" alt="Placa porta número oficial" style="max-width:100%;height:auto" />
 
 Los diseños deberán permitir identificar claramente al equipo y al
 piloto durante la carrera y retransmisión
