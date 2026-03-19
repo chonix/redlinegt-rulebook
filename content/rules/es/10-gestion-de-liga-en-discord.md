@@ -1,14 +1,10 @@
-# 8. GESTIÓN DE LIGA EN DISCORD
-
-## 8.1 Plataforma Oficial de Gestión
+# 10. GESTIÓN DE LIGA EN DISCORD
 
 Toda la gestión de los pilotos y equipos debe nacer del servidor oficial
-de Discord REDLINE GT LEAGUE - https://discord.gg/bybcwHPQ3
+de Discord REDLINE GT LEAGUE
 
 La asistencia dependerá exclusivamente de los datos recogidos en el
 canal de \#asistencia semanal.
-
-## 8.2 ASISTENCIA SEMANAL
 
 • Cada semana se solicitará registro manual en el canal \#asistencia
 semanal del servidor REDLINE GT en Discord.

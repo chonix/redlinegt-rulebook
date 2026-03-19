@@ -1,12 +1,11 @@
-# 9. REQUISITOS DE DISEÑO
+# 11. REQUISITOS DE DISEÑO
 
 Todo coche que participe en REDLINE GT LEAGUE deberá instalar en sus
 diseños la placa porta número oficial, en ambos lados del coche, en un
 tamaño mínimo de 50% por 50% (Ver Imagen)
 
-<img src="media/image2.jpg" style="width:6.26042in;height:3.52083in" />
-
-## 9.1 Identificación Obligatoria
+## <img src="media/media/image2.jpg"
+style="width:6.27083in;height:3.52083in" />11.1. Identificación obligatoria
 
 Los diseños deberán permitir identificar claramente al equipo y al
 piloto durante la carrera y retransmisión
@@ -19,14 +18,12 @@ Cada vehículo deberá incluir:
 
 • Un diseño coherente entre los pilotos de un mismo equipo.
 
-## 9.2 Diseño de Equipo
+## 11.2. Diseño de equipo
 
 Se recomienda que los pilotos de un mismo equipo utilicen diseños
 similares o compartan elementos visuales comunes (colores,
 patrocinadores o identidad gráfica) para facilitar la identificación
 durante las retransmisiones.
-
-## 9.3 Limitaciones
 
 No se permitirán diseños que:
 
@@ -36,9 +33,4 @@ autorización de la organización
 • Contengan contenido ofensivo o que pueda resultar irrespetuoso hacia
 otros pilotos o miembros de la comunidad.
 
-• Utilicen números distintos al registrado por el piloto
-
 • Oculten o alteren la placa porta número oficial
-
-La organización podrá solicitar modificaciones en un diseño si considera
-que no cumple con estas normas.

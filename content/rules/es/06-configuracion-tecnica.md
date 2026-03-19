@@ -1,6 +1,6 @@
-# 4. CONFIGURACIÓN TÉCNICA
+# 6. CONFIGURACIÓN TÉCNICA
 
-## 4.1 Ajustes de Sala Sprint
+###  6.1 AJUSTES DE SALA - SPRINT
 
 - Práctica / Clasificación / Carrera de resistencia
 
@@ -20,7 +20,7 @@
 
 - BOP ON
 
-- Ajustes (Equilibrio de Frenos y Control de tracción)
+- Ajustes (Equilibrio de Frenos)
 
 - Impulso Off
 
@@ -30,13 +30,13 @@
 
 - Daños mecánicos leves
 
-- Desgaste Neumáticos X5
+- Desgaste Neumáticos X3
 
-- Consumo Combustible X4
+- Consumo Combustible X2
 
 - Velocidad de repostaje 5L/seg
 
-- Combustible inicial 100L (Sprint)
+- Combustible inicial 50L
 
 - Agarre fuera pista Real
 
@@ -46,13 +46,11 @@
 
 - 10 minutos
 
-- 120 seg
+- Desgaste Neumáticos X3
 
-- Desgaste Neumáticos X5
+- Consumo Combustible X2
 
-- Consumo Combustible X4
-
-- Combustible inicial por defecto
+- Combustible inicial 50 L
 
 ### Normativas
 
@@ -78,12 +76,18 @@
 
 - Banderas ON
 
-## 4.2 Ajustes Sala Carrera
+## 
 
-- **Práctica / Carrera de Resistencia 40 mins**
+## 6.2 Ajustes de sala - Carrera
 
-- **Salida lanzada**
+- Práctica / Carrera de Resistencia 40 mins
 
-- **Primero los más lentos**
+- Salida lanzada
 
-- **Combustible inicial 50 L**
+- Establecido por el anfitrión (parrilla invertida)
+
+- Combustible inicial 50 L
+
+- Desgaste Neumáticos X5
+
+- Consumo Combustible X4
