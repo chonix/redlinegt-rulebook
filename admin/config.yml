@@ -2,8 +2,8 @@ backend:
   name: github
   repo: chonix/redlinegt-rulebook
   branch: main
-  base_url: https://oauth.decapcms.org
-  auth_endpoint: auth
+  base_url: https://decap-oauth-proxy-ashy.vercel.app
+  auth_endpoint: api/auth
 
 media_folder: "content/rules/media"
 public_folder: "/content/rules/media"
