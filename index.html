@@ -69,6 +69,39 @@
         font-size: 1rem;
       }
 
+      .lang-switch {
+        margin-top: 1rem;
+        display: flex;
+        justify-content: center;
+        gap: 0.5rem;
+        flex-wrap: wrap;
+      }
+
+      .lang-btn {
+        appearance: none;
+        border: 1px solid var(--border);
+        background: rgba(255, 255, 255, 0.02);
+        color: var(--text-muted);
+        padding: 0.45rem 0.9rem;
+        border-radius: var(--radius);
+        cursor: pointer;
+        font-weight: 700;
+        letter-spacing: 0.02em;
+        transition: all 0.15s ease;
+      }
+
+      .lang-btn:hover {
+        border-color: var(--accent);
+        color: #fff;
+      }
+
+      .lang-btn[aria-pressed="true"],
+      .lang-btn.active {
+        background: rgba(229, 34, 34, 0.14);
+        border-color: var(--accent);
+        color: #fff;
+      }
+
       /* Layout */
       .layout {
         display: flex;
@@ -330,7 +363,18 @@
   <body>
     <header class="header">
       <h1><span>REDLINE</span> GT League</h1>
-      <p>Reglamento Oficial</p>
+      <p id="pageSubtitle">Reglamento Oficial</p>
+      <div class="lang-switch" role="group" aria-label="Idioma">
+        <button class="lang-btn" data-lang="es" id="lang-btn-es" aria-pressed="true">
+          ES
+        </button>
+        <button class="lang-btn" data-lang="pt" id="lang-btn-pt" aria-pressed="false">
+          PT
+        </button>
+        <button class="lang-btn" data-lang="en" id="lang-btn-en" aria-pressed="false">
+          EN
+        </button>
+      </div>
     </header>
 
     <div class="layout">
@@ -349,64 +393,76 @@
     <footer class="footer">REDLINE GT League</footer>
 
     <script>
-      const chapters = [
+      const languages = {
+        es: { subtitle: "Reglamento Oficial" },
+        pt: { subtitle: "Regulamento Oficial" },
+        en: { subtitle: "Official Rulebook" },
+      };
+
+      // Fallback chapter mapping (keeps ES working even if the ES index.md is missing).
+      const fallbackChapters = [
         {
-          file: "content/rules/es/01-disposiciones-generales.md",
-          title: "1. Disposiciones Generales",
+          file: "1.md",
+          titleEs: "1. Disposiciones Generales",
         },
         {
-          file: "content/rules/es/02-categoria-y-formato-general.md",
-          title: "2. Categoría y Formato General",
+          file: "2.md",
+          titleEs: "2. Categoría y Formato General",
         },
         {
-          file: "content/rules/es/03-eleccion-de-modelo-draft.md",
-          title: "3. Elección de Modelo (Draft)",
+          file: "3.md",
+          titleEs: "3. Elección de Modelo (Draft)",
         },
         {
-          file: "content/rules/es/04-inscripcion-de-equipo.md",
-          title: "4. Inscripción de Equipo",
+          file: "4.md",
+          titleEs: "4. Inscripción de Equipo",
         },
         {
-          file: "content/rules/es/05-formato-deportivo.md",
-          title: "5. Formato Deportivo",
+          file: "5.md",
+          titleEs: "5. Formato Deportivo",
         },
         {
-          file: "content/rules/es/06-configuracion-tecnica.md",
-          title: "6. Configuración Técnica",
+          file: "6.md",
+          titleEs: "6. Configuración Técnica",
         },
         {
-          file: "content/rules/es/07-sistema-de-puntuacion.md",
-          title: "7. Sistema de Puntuación",
+          file: "7.md",
+          titleEs: "7. Sistema de Puntuación",
         },
         {
-          file: "content/rules/es/08-sistema-de-penalizaciones.md",
-          title: "8. Sistema de Penalizaciones",
+          file: "8.md",
+          titleEs: "8. Sistema de Penalizaciones",
         },
         {
-          file: "content/rules/es/09-reportes-y-reclamaciones.md",
-          title: "9. Reportes y Reclamaciones",
+          file: "9.md",
+          titleEs: "9. Reportes y Reclamaciones",
         },
         {
-          file: "content/rules/es/10-gestion-de-liga-en-discord.md",
-          title: "10. Gestión de Liga en Discord",
+          file: "10.md",
+          titleEs: "10. Gestión de Liga en Discord",
         },
         {
-          file: "content/rules/es/11-requisitos-de-diseno.md",
-          title: "11. Requisitos de Diseño",
+          file: "11.md",
+          titleEs: "11. Requisitos de Diseño",
         },
         {
-          file: "content/rules/es/12-disposiciones-finales.md",
-          title: "12. Disposiciones Finales",
+          file: "12.md",
+          titleEs: "12. Disposiciones Finales",
         },
       ];
 
+      let currentLang = "es";
+      let loadRequestId = 0;
+
       function fixImagePaths(html) {
+        // All languages share the same media folder for now.
+        // This keeps image URLs stable even if PT/EN are introduced later.
         return html.replace(
           /src="media\/media\//g,
-          'src="content/rules/es/media/'
+          'src="content/rules/media/'
         ).replace(
           /src="media\//g,
-          'src="content/rules/es/media/'
+          'src="content/rules/media/'
         );
       }
 
@@ -420,18 +476,96 @@
         return text;
       }
 
-      async function loadChapters() {
+      function parseIndexChapters(indexMarkdown) {
+        // Expecting the same format as `content/rules/<lang>/index.md`,
+        // e.g. `1. [Disposiciones Generales](./1.md)`
+        const results = [];
+        const rx =
+          /^\s*(\d+)\.\s*\[([^\]]+)\]\(([^)]+\.md)\)\s*$/gm;
+
+        for (const match of indexMarkdown.matchAll(rx)) {
+          const num = match[1];
+          const label = match[2].trim();
+          const target = match[3].trim();
+          results.push({
+            title: `${num}. ${label}`,
+            target,
+          });
+        }
+
+        // Fallback: parse any markdown link that points to a .md file.
+        if (results.length === 0) {
+          const generic = /\[([^\]]+)\]\(([^)]+\.md)\)/g;
+          for (const match of indexMarkdown.matchAll(generic)) {
+            results.push({
+              title: match[1].trim(),
+              target: match[2].trim(),
+            });
+          }
+        }
+        return results;
+      }
+
+      function resolveChapterTarget(lang, target) {
+        // Most links look like `./01-foo.md`.
+        const normalized = target.replace(/^\.?\//, "");
+        if (normalized.startsWith("content/")) return normalized;
+        return `content/rules/${lang}/${normalized}`;
+      }
+
+      function extractChapterTitle(markdown) {
+        // Use the first top-level heading as a best-effort title.
+        const m = markdown.match(/^#\s+(.+)\s*$/m);
+        return m ? m[1].trim() : null;
+      }
+
+      async function loadChapters(lang) {
+        const requestId = ++loadRequestId;
+        currentLang = lang;
+
         const contentEl = document.getElementById("content");
         const navEl = document.getElementById("nav-links");
         contentEl.innerHTML = "";
+        navEl.innerHTML = "";
 
-        for (let i = 0; i < chapters.length; i++) {
-          const ch = chapters[i];
+        const subtitleEl = document.getElementById("pageSubtitle");
+        if (languages[lang] && subtitleEl) subtitleEl.textContent = languages[lang].subtitle;
+        document.documentElement.lang = lang;
+
+        const sections = [];
+
+        let indexChapters = null;
+        try {
+          // Always use the Spanish index as the shared chapter structure.
+          // This prevents the PT/EN nav from breaking when editors add new ES chapters.
+          const indexRes = await fetch(`content/rules/es/index.md`);
+          if (indexRes.ok) {
+            const indexMd = await indexRes.text();
+            indexChapters = parseIndexChapters(indexMd);
+          }
+        } catch {
+          indexChapters = null;
+        }
+
+        const chaptersToLoad =
+          indexChapters && indexChapters.length > 0
+            ? indexChapters.map((ch) => ({
+                file: resolveChapterTarget(lang, ch.target),
+                title: ch.title,
+              }))
+            : fallbackChapters.map((ch) => ({
+                file: `content/rules/${lang}/${ch.file}`,
+                title: lang === "es" ? ch.titleEs : extractChapterTitle(""),
+              }));
+
+        for (let i = 0; i < chaptersToLoad.length; i++) {
+          const ch = chaptersToLoad[i];
           const id = "chapter-" + (i + 1);
 
           const link = document.createElement("a");
           link.href = "#" + id;
-          link.textContent = ch.title;
+          link.textContent =
+            ch.title && ch.title.trim() ? ch.title : "Cargando...";
           link.addEventListener("click", closeMobileNav);
           navEl.appendChild(link);
 
@@ -444,13 +578,30 @@
             if (!res.ok) throw new Error("Not found");
             const md = await res.text();
             const clean = stripFrontmatter(md);
+
             section.innerHTML = fixImagePaths(marked.parse(clean));
+
+            // Ensure the sidebar reflects the selected language.
+            // For ES we trust `index.md`; for PT/EN we infer from the loaded chapter.
+            const inferred = extractChapterTitle(clean);
+            if (
+              inferred &&
+              (lang !== "es" ||
+                !ch.title ||
+                !ch.title.trim() ||
+                ch.title.includes("Cargando"))
+            ) {
+              link.textContent = inferred;
+            }
           } catch {
             section.innerHTML =
               "<p style='color:var(--text-muted)'>No se pudo cargar este capítulo.</p>";
           }
 
           contentEl.appendChild(section);
+          sections.push(section);
+
+          if (requestId !== loadRequestId) return; // ignore stale loads
         }
 
         setupScrollSpy();
@@ -495,8 +646,29 @@
 
       overlay.addEventListener("click", closeMobileNav);
 
+      function setActiveLangButtons(lang) {
+        document.querySelectorAll(".lang-btn").forEach((btn) => {
+          const pressed = btn.getAttribute("data-lang") === lang;
+          btn.setAttribute("aria-pressed", pressed ? "true" : "false");
+          btn.classList.toggle("active", pressed);
+        });
+      }
+
+      document.querySelectorAll(".lang-btn").forEach((btn) => {
+        btn.addEventListener("click", () => {
+          const lang = btn.getAttribute("data-lang");
+          if (!lang || lang === currentLang) return;
+
+          setActiveLangButtons(lang);
+          closeMobileNav();
+          loadChapters(lang);
+          window.scrollTo({ top: 0, behavior: "smooth" });
+        });
+      });
+
       /* Init */
-      loadChapters();
+      setActiveLangButtons(currentLang);
+      loadChapters(currentLang);
     </script>
     <script>
       if (window.netlifyIdentity) {

@@ -2,17 +2,40 @@ backend:
   name: git-gateway
   branch: main
 
-media_folder: "content/rules/es/media"
-public_folder: "/content/rules/es/media"
+media_folder: "content/rules/media"
+public_folder: "/content/rules/media"
 
 collections:
   - name: "rules_es"
     label: "Reglamento (ES)"
     folder: "content/rules/es"
     create: true
-    slug: "{{slug}}"
+    # Stable numeric filename generation (e.g. order=1 => "1.md")
+    slug: "{{order}}"
 
     fields:
       - { label: "Título", name: "title", widget: "string" }
       - { label: "Orden", name: "order", widget: "number" }
       - { label: "Contenido", name: "body", widget: "markdown" }
+
+  - name: "rules_pt"
+    label: "Regulamento (PT)"
+    folder: "content/rules/pt"
+    create: true
+    slug: "{{order}}"
+
+    fields:
+      - { label: "Título", name: "title", widget: "string" }
+      - { label: "Orden", name: "order", widget: "number" }
+      - { label: "Conteúdo", name: "body", widget: "markdown" }
+
+  - name: "rules_en"
+    label: "Rulebook (EN)"
+    folder: "content/rules/en"
+    create: true
+    slug: "{{order}}"
+
+    fields:
+      - { label: "Title", name: "title", widget: "string" }
+      - { label: "Order", name: "order", widget: "number" }
+      - { label: "Content", name: "body", widget: "markdown" }
