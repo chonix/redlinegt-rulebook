@@ -21,6 +21,17 @@ collections:
       - { label: "Orden", name: "order", widget: "number" }
       - { label: "Contenido", name: "body", widget: "markdown" }
 
+  - name: "rules_ca"
+    label: "Reglament (CA)"
+    folder: "content/rules/ca"
+    create: true
+    slug: "{{order}}"
+
+    fields:
+      - { label: "Títol", name: "title", widget: "string" }
+      - { label: "Ordre", name: "order", widget: "number" }
+      - { label: "Contingut", name: "body", widget: "markdown" }
+
   - name: "rules_pt"
     label: "Regulamento (PT)"
     folder: "content/rules/pt"

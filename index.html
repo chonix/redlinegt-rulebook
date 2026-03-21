@@ -9,7 +9,6 @@
       content="Reglamento oficial de REDLINE GT League. Normas deportivas, técnicas y de conducta que regulan la competición."
     />
     <script src="https://cdn.jsdelivr.net/npm/marked/marked.min.js"></script>
-    <script src="https://identity.netlify.com/v1/netlify-identity-widget.js"></script>
     <style>
       *,
       *::before,
@@ -368,6 +367,9 @@
         <button class="lang-btn" data-lang="es" id="lang-btn-es" aria-pressed="true">
           ES
         </button>
+        <button class="lang-btn" data-lang="ca" id="lang-btn-ca" aria-pressed="false">
+          CA
+        </button>
         <button class="lang-btn" data-lang="pt" id="lang-btn-pt" aria-pressed="false">
           PT
         </button>
@@ -395,6 +397,7 @@
     <script>
       const languages = {
         es: { subtitle: "Reglamento Oficial" },
+        ca: { subtitle: "Reglament Oficial" },
         pt: { subtitle: "Regulamento Oficial" },
         en: { subtitle: "Official Rulebook" },
       };
@@ -555,7 +558,7 @@
               }))
             : fallbackChapters.map((ch) => ({
                 file: `content/rules/${lang}/${ch.file}`,
-                title: lang === "es" ? ch.titleEs : extractChapterTitle(""),
+                title: ch.titleEs,
               }));
 
         for (let i = 0; i < chaptersToLoad.length; i++) {
@@ -669,17 +672,6 @@
       /* Init */
       setActiveLangButtons(currentLang);
       loadChapters(currentLang);
-    </script>
-    <script>
-      if (window.netlifyIdentity) {
-        window.netlifyIdentity.on("init", function (user) {
-          if (!user) {
-            window.netlifyIdentity.on("login", function () {
-              document.location.href = "/admin/";
-            });
-          }
-        });
-      }
     </script>
   </body>
 </html>
