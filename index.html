@@ -549,7 +549,13 @@
         try {
           // Always use the Spanish index as the shared chapter structure.
           // This prevents the PT/EN nav from breaking when editors add new ES chapters.
-          const indexRes = await fetch(`content/rules/es/index.md`);
+          let indexRes;
+          try {
+            indexRes = await fetch(`content/rules/${lang}/index.md`);
+            if (!indexRes.ok) throw new Error();
+          } catch {
+            indexRes = await fetch(`content/rules/es/index.md`);
+          }
           if (indexRes.ok) {
             const indexMd = await indexRes.text();
             indexChapters = parseIndexChapters(indexMd);
@@ -586,7 +592,25 @@
 
           try {
             const res = await fetch(ch.file);
-            if (!res.ok) throw new Error("Not found");
+            if (!res.ok) {
+              section.innerHTML = `
+                <p style="color:var(--text-muted)">
+                  ${
+                    lang === "es"
+                      ? "Este capítulo no existe."
+                      : lang === "en"
+                      ? "This chapter is not available in this language yet."
+                      : lang === "pt"
+                      ? "Este capítulo ainda não está disponível neste idioma."
+                      : lang === "ca"
+                      ? "Aquest capítol encara no està disponible en aquest idioma."
+                      : "Chapter not available."
+                  }
+                </p>
+              `;
+              contentEl.appendChild(section);
+              continue;
+            }
             const md = await res.text();
             const clean = stripFrontmatter(md);
 
