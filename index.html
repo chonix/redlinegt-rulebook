@@ -592,18 +592,15 @@
 
             section.innerHTML = fixImagePaths(marked.parse(clean));
 
-            // Ensure the sidebar reflects the selected language.
-            // For ES we trust `index.md`; for PT/EN we infer from the loaded chapter.
-            const inferred = extractChapterTitle(clean);
-            if (
-              inferred &&
-              (lang !== "es" ||
-                !ch.title ||
-                !ch.title.trim() ||
-                ch.title.includes("Cargando"))
-            ) {
-              link.textContent = inferred;
-            }
+            // // Ensure the sidebar reflects the selected language.
+            // // For ES we trust `index.md`; for PT/EN we infer from the loaded chapter.
+            // const inferred = extractChapterTitle(clean);
+            // if (lang === "es") {
+            //   const inferred = extractChapterTitle(clean);
+            //   if (inferred) {
+            //     link.textContent = inferred;
+            //   }
+            // }
           } catch {
             section.innerHTML =
               "<p style='color:var(--text-muted)'>No se pudo cargar este capítulo.</p>";
