@@ -300,6 +300,36 @@
         }
       }
 
+      /* Chapter skeleton shimmer */
+      .chapter-skeleton {
+        pointer-events: none;
+      }
+
+      .skeleton-line {
+        height: 1em;
+        border-radius: 4px;
+        margin-bottom: 0.75rem;
+        background: linear-gradient(
+          90deg,
+          var(--border) 25%,
+          rgba(255,255,255,0.06) 50%,
+          var(--border) 75%
+        );
+        background-size: 200% 100%;
+        animation: shimmer 1.4s infinite;
+      }
+
+      .skeleton-line.title  { width: 55%; height: 1.4em; margin-bottom: 1.25rem; }
+      .skeleton-line.short  { width: 38%; }
+      .skeleton-line.medium { width: 72%; }
+      .skeleton-line.long   { width: 91%; }
+      .skeleton-line.full   { width: 100%; }
+
+      @keyframes shimmer {
+        from { background-position: 200% 0; }
+        to   { background-position: -200% 0; }
+      }
+
       /* Mobile nav toggle */
       .nav-toggle {
         display: none;
@@ -533,10 +563,29 @@
         return `content/rules/${lang}/${normalized}`;
       }
 
-      function extractChapterTitle(markdown) {
-        // Use the first top-level heading as a best-effort title.
-        const m = markdown.match(/^#\s+(.+)\s*$/m);
-        return m ? m[1].trim() : null;
+      function chapterNotAvailable(lang) {
+        const msgs = {
+          es: "Este capítulo no existe.",
+          en: "This chapter is not available in this language yet.",
+          pt: "Este capítulo ainda não está disponível neste idioma.",
+          ca: "Aquest capítol encara no està disponible en aquest idioma.",
+        };
+        return `<p style="color:var(--text-muted)">${msgs[lang] ?? "Chapter not available."}</p>`;
+      }
+
+      function skeletonHTML() {
+        return `
+          <div class="chapter-skeleton">
+            <div class="skeleton-line title"></div>
+            <div class="skeleton-line long"></div>
+            <div class="skeleton-line full"></div>
+            <div class="skeleton-line medium"></div>
+            <div class="skeleton-line full"></div>
+            <div class="skeleton-line short"></div>
+            <div class="skeleton-line full"></div>
+            <div class="skeleton-line long"></div>
+            <div class="skeleton-line medium"></div>
+          </div>`;
       }
 
       async function loadChapters(lang) {
@@ -552,12 +601,9 @@
         if (languages[lang] && subtitleEl) subtitleEl.textContent = languages[lang].subtitle;
         document.documentElement.lang = lang;
 
-        const sections = [];
-
+        // ── 1. Resolve the chapter list (index fetch is still serial — it's one small file) ──
         let indexChapters = null;
         try {
-          // Always use the Spanish index as the shared chapter structure.
-          // This prevents the PT/EN nav from breaking when editors add new ES chapters.
           let indexRes;
           try {
             indexRes = await fetch(`content/rules/${lang}/index.md`);
@@ -566,12 +612,13 @@
             indexRes = await fetch(`content/rules/es/index.md`);
           }
           if (indexRes.ok) {
-            const indexMd = await indexRes.text();
-            indexChapters = parseIndexChapters(indexMd);
+            indexChapters = parseIndexChapters(await indexRes.text());
           }
         } catch {
           indexChapters = null;
         }
+
+        if (requestId !== loadRequestId) return;
 
         const chaptersToLoad =
           indexChapters && indexChapters.length > 0
@@ -584,67 +631,51 @@
                 title: ch.titleEs,
               }));
 
-        for (let i = 0; i < chaptersToLoad.length; i++) {
-          const ch = chaptersToLoad[i];
+        // ── 2. Build all nav links + skeleton sections immediately ──
+        const sectionEls = chaptersToLoad.map((ch, i) => {
           const id = "chapter-" + (i + 1);
 
           const link = document.createElement("a");
           link.href = "#" + id;
-          link.textContent =
-            ch.title && ch.title.trim() ? ch.title : "Cargando...";
+          link.textContent = ch.title && ch.title.trim() ? ch.title : "…";
           link.addEventListener("click", closeMobileNav);
           navEl.appendChild(link);
 
           const section = document.createElement("section");
           section.className = "chapter";
           section.id = id;
-
-          try {
-            const res = await fetch(ch.file);
-            if (!res.ok) {
-              section.innerHTML = `
-                <p style="color:var(--text-muted)">
-                  ${
-                    lang === "es"
-                      ? "Este capítulo no existe."
-                      : lang === "en"
-                      ? "This chapter is not available in this language yet."
-                      : lang === "pt"
-                      ? "Este capítulo ainda não está disponível neste idioma."
-                      : lang === "ca"
-                      ? "Aquest capítol encara no està disponible en aquest idioma."
-                      : "Chapter not available."
-                  }
-                </p>
-              `;
-              contentEl.appendChild(section);
-              continue;
-            }
-            const md = await res.text();
-            const clean = stripFrontmatter(md);
-
-            section.innerHTML = fixImagePaths(marked.parse(clean));
-
-            // // Ensure the sidebar reflects the selected language.
-            // // For ES we trust `index.md`; for PT/EN we infer from the loaded chapter.
-            // const inferred = extractChapterTitle(clean);
-            // if (lang === "es") {
-            //   const inferred = extractChapterTitle(clean);
-            //   if (inferred) {
-            //     link.textContent = inferred;
-            //   }
-            // }
-          } catch {
-            section.innerHTML =
-              "<p style='color:var(--text-muted)'>No se pudo cargar este capítulo.</p>";
-          }
-
+          section.innerHTML = skeletonHTML();
           contentEl.appendChild(section);
-          sections.push(section);
 
-          if (requestId !== loadRequestId) return; // ignore stale loads
-        }
+          return section;
+        });
 
+        // ── 3. Fire all fetches in parallel ──
+        await Promise.all(
+          chaptersToLoad.map(async (ch, i) => {
+            try {
+              const res = await fetch(ch.file);
+              if (requestId !== loadRequestId) return;
+
+              if (!res.ok) {
+                sectionEls[i].innerHTML = chapterNotAvailable(lang);
+                return;
+              }
+              const clean = stripFrontmatter(await res.text());
+              try {
+                sectionEls[i].innerHTML = fixImagePaths(marked.parse(clean));
+              } catch {
+                sectionEls[i].innerHTML = chapterNotAvailable(lang);
+              }
+            } catch {
+              if (requestId !== loadRequestId) return;
+              sectionEls[i].innerHTML =
+                "<p style='color:var(--text-muted)'>No se pudo cargar este capítulo.</p>";
+            }
+          })
+        );
+
+        if (requestId !== loadRequestId) return;
         setupScrollSpy();
       }
 
