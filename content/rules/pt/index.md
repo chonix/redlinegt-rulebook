@@ -10,3 +10,8 @@ conduta que regulam a competição.
 1. [Disposições Gerais](./1.md)  
 2. [Categoria e Formato Geral](./2.md)  
 3. [Escolha de Modelo e Draft](./3.md)  
+4. [Inscrição de Equipa](./4.md)  
+5. [Formato Desportivo](./5.md)  
+6. [Configuração Técnica](./6.md)  
+7. [Sistema de Pontuação](./7.md)  
+8. [Sistema de Penalizações](./8.md)  
