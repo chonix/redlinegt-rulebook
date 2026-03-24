@@ -392,6 +392,46 @@
         }
       }
 
+      /* Back to top */
+      .back-to-top {
+        display: flex;
+        align-items: center;
+        justify-content: center;
+        position: fixed;
+        bottom: 1.5rem;
+        left: 50%;
+        transform: translateX(-50%) translateY(80px);
+        z-index: 9998;
+        width: 42px;
+        height: 42px;
+        background: var(--accent);
+        color: #fff;
+        border: none;
+        border-radius: 3px;
+        cursor: pointer;
+        font-size: 1.1rem;
+        box-shadow: 0 4px 16px rgba(229, 34, 34, 0.45);
+        opacity: 0;
+        transition: opacity 0.25s ease, transform 0.25s ease, background 0.15s ease;
+        will-change: transform, opacity;
+        clip-path: polygon(0 8px, 50% 0, 100% 8px, 100% 100%, 0 100%);
+      }
+
+      .back-to-top:hover {
+        background: var(--accent-hover);
+      }
+
+      .back-to-top.visible {
+        opacity: 1;
+        transform: translateX(-50%) translateY(0);
+      }
+
+      @media (max-width: 1024px) {
+        .back-to-top {
+          left: calc(50% - 36px);
+        }
+      }
+
       /* Footer */
       .footer {
         text-align: center;
@@ -434,15 +474,15 @@
     </div>
 
     <button class="nav-toggle" id="navToggle" aria-label="Abrir menú">☰</button>
-
+    <button class="back-to-top" id="backToTop" aria-label="Top">&#8963;</button>
     <footer class="footer">REDLINE GT League</footer>
 
     <script>
       const languages = {
-        es: { subtitle: "Reglamento Oficial" },
-        ca: { subtitle: "Reglament Oficial" },
-        pt: { subtitle: "Regulamento Oficial" },
-        en: { subtitle: "Official Rulebook" },
+        es: { subtitle: "Reglamento Oficial", backToTop: "Volver arriba" },
+        ca: { subtitle: "Reglament Oficial",  backToTop: "Tornar a dalt" },
+        pt: { subtitle: "Regulamento Oficial", backToTop: "Voltar ao topo" },
+        en: { subtitle: "Official Rulebook",  backToTop: "Back to top" },
       };
 
       // Fallback chapter mapping (keeps ES working even if the ES index.md is missing).
@@ -599,6 +639,7 @@
 
         const subtitleEl = document.getElementById("pageSubtitle");
         if (languages[lang] && subtitleEl) subtitleEl.textContent = languages[lang].subtitle;
+        document.getElementById("backToTop").setAttribute("aria-label", languages[lang]?.backToTop ?? "Top");
         document.documentElement.lang = lang;
 
         // ── 1. Resolve the chapter list (index fetch is still serial — it's one small file) ──
@@ -738,6 +779,15 @@
           loadChapters(lang);
           window.scrollTo({ top: 0, behavior: "smooth" });
         });
+      });
+
+      /* Back to top */
+      const backToTop = document.getElementById("backToTop");
+      window.addEventListener("scroll", () => {
+        backToTop.classList.toggle("visible", window.scrollY > 400);
+      }, { passive: true });
+      backToTop.addEventListener("click", () => {
+        window.scrollTo({ top: 0, behavior: "smooth" });
       });
 
       /* Init */
