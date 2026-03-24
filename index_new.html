@@ -446,8 +446,8 @@
         justify-content: center;
         position: fixed;
         bottom: 1.5rem;
-        left: 50%;
-        transform: translateX(-50%) translateY(80px);
+        right: 1.5rem;
+        transform: translateY(80px);
         z-index: 9998;
         width: 42px;
         height: 42px;
@@ -470,13 +470,13 @@
 
       .back-to-top.visible {
         opacity: 1;
-        transform: translateX(-50%) translateY(0);
+        transform: translateY(0);
       }
 
-      /* On mobile, nudge it left so it doesn't overlap the nav toggle */
+      /* On mobile, stack above the nav toggle */
       @media (max-width: 1024px) {
         .back-to-top {
-          left: calc(50% - 36px);
+          bottom: 5.5rem;
         }
       }
 
@@ -579,16 +579,16 @@
 
     <button class="nav-toggle" id="navToggle" aria-label="Abrir menú">☰</button>
 
-    <button class="back-to-top" id="backToTop" aria-label="Volver arriba">&#8963;</button>
+    <button class="back-to-top" id="backToTop" aria-label="Top">&#8963;</button>
 
     <footer class="footer">REDLINE GT League</footer>
 
     <script>
       const languages = {
-        es: { subtitle: "Reglamento Oficial" },
-        ca: { subtitle: "Reglament Oficial" },
-        pt: { subtitle: "Regulamento Oficial" },
-        en: { subtitle: "Official Rulebook" },
+        es: { subtitle: "Reglamento Oficial", backToTop: "Volver arriba" },
+        ca: { subtitle: "Reglament Oficial",  backToTop: "Tornar a dalt" },
+        pt: { subtitle: "Regulamento Oficial", backToTop: "Voltar ao topo" },
+        en: { subtitle: "Official Rulebook",  backToTop: "Back to top" },
       };
 
       // Fallback chapter mapping (keeps ES working even if the ES index.md is missing).
@@ -745,6 +745,7 @@
 
         const subtitleEl = document.getElementById("pageSubtitle");
         if (languages[lang] && subtitleEl) subtitleEl.textContent = languages[lang].subtitle;
+        document.getElementById("backToTop").setAttribute("aria-label", languages[lang]?.backToTop ?? "Top");
         document.documentElement.lang = lang;
 
         // ── 1. Resolve the chapter list (index fetch is still serial — it's one small file) ──
