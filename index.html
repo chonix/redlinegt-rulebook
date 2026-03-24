@@ -399,8 +399,7 @@
         justify-content: center;
         position: fixed;
         bottom: 1.5rem;
-        left: 50%;
-        transform: translateX(-50%) translateY(80px);
+        right: 1.5rem;
         z-index: 9998;
         width: 42px;
         height: 42px;
@@ -412,23 +411,21 @@
         font-size: 1.1rem;
         box-shadow: 0 4px 16px rgba(229, 34, 34, 0.45);
         opacity: 0;
+        transform: translateY(80px);
         transition: opacity 0.25s ease, transform 0.25s ease, background 0.15s ease;
         will-change: transform, opacity;
         clip-path: polygon(0 8px, 50% 0, 100% 8px, 100% 100%, 0 100%);
       }
 
-      .back-to-top:hover {
-        background: var(--accent-hover);
-      }
-
       .back-to-top.visible {
         opacity: 1;
-        transform: translateX(-50%) translateY(0);
+        transform: translateY(0);
       }
 
+      /* On mobile, stack it above the nav toggle */
       @media (max-width: 1024px) {
         .back-to-top {
-          left: calc(50% - 36px);
+          bottom: 5.5rem; /* clears the 48px toggle + gap */
         }
       }
 

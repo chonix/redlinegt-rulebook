@@ -439,6 +439,47 @@
         will-change: transform;
       }
 
+      /* Back to top */
+      .back-to-top {
+        display: flex;
+        align-items: center;
+        justify-content: center;
+        position: fixed;
+        bottom: 1.5rem;
+        left: 50%;
+        transform: translateX(-50%) translateY(80px);
+        z-index: 9998;
+        width: 42px;
+        height: 42px;
+        background: var(--accent);
+        color: #fff;
+        border: none;
+        border-radius: 3px;
+        cursor: pointer;
+        font-size: 1.1rem;
+        box-shadow: 0 4px 16px rgba(204, 10, 10, 0.45);
+        opacity: 0;
+        transition: opacity 0.25s ease, transform 0.25s ease, background 0.15s ease;
+        will-change: transform, opacity;
+        clip-path: polygon(0 8px, 50% 0, 100% 8px, 100% 100%, 0 100%);
+      }
+
+      .back-to-top:hover {
+        background: var(--accent-hover);
+      }
+
+      .back-to-top.visible {
+        opacity: 1;
+        transform: translateX(-50%) translateY(0);
+      }
+
+      /* On mobile, nudge it left so it doesn't overlap the nav toggle */
+      @media (max-width: 1024px) {
+        .back-to-top {
+          left: calc(50% - 36px);
+        }
+      }
+
       /* Responsive */
       @media (max-width: 1024px) {
         .header-inner {
@@ -537,6 +578,8 @@
     </div>
 
     <button class="nav-toggle" id="navToggle" aria-label="Abrir menú">☰</button>
+
+    <button class="back-to-top" id="backToTop" aria-label="Volver arriba">&#8963;</button>
 
     <footer class="footer">REDLINE GT League</footer>
 
@@ -841,6 +884,15 @@
           loadChapters(lang);
           window.scrollTo({ top: 0, behavior: "smooth" });
         });
+      });
+
+      /* Back to top */
+      const backToTop = document.getElementById("backToTop");
+      window.addEventListener("scroll", () => {
+        backToTop.classList.toggle("visible", window.scrollY > 400);
+      }, { passive: true });
+      backToTop.addEventListener("click", () => {
+        window.scrollTo({ top: 0, behavior: "smooth" });
       });
 
       /* Init */
