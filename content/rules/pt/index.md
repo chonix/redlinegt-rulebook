@@ -15,3 +15,7 @@ conduta que regulam a competição.
 6. [Configuração Técnica](./6.md)  
 7. [Sistema de Pontuação](./7.md)  
 8. [Sistema de Penalizações](./8.md)  
+9. [Relatórios e Reclamações](./9.md)  
+10. [Gestão da Liga no Discord](./10.md)  
+11. [Requisitos da pintura](./11.md)  
+12. [Disposições Finais](./12.md)  
